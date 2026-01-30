@@ -15,9 +15,6 @@ env/
 .DS_Store
 Thumbs.db
 
-# Ignore old session folders
-Session 2-23 jan/
-
 # Ignore large datasets if needed
 *.zip
 *.tar.gz
