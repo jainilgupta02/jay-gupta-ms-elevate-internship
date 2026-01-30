@@ -1,61 +1,156 @@
-# 🎓 Microsoft Elevate Internship – GTU 8th Semester
+# Microsoft Elevate – GTU Internship (Jan–Apr 2026)
 
-This repository contains all my learning, practice work, and assignments completed during my **GTU 8th Semester Internship** under the **Microsoft Elevate Program**, powered by **FICE Education**.
+This repository documents my **12-week internship under the Microsoft Elevate Program**, conducted as part of **GTU 8th Semester Internship** and powered by **Edunet Foundation & FICE Education**.
 
----
-
-## 🚀 Internship Overview
-- **Program**: Microsoft Elevate Internship
-- **University**: Gujarat Technological University (GTU)
-- **Semester**: 8th Semester
-- **Powered by**: FICE Education
-- **Duration**: Jan 2026 – Present
-- **Mode**: Hands-on + Industry-focused Training
+The internship focuses on **Data Analytics, Machine Learning, Deep Learning, Power BI, Generative AI, and Microsoft Azure Cloud**, with hands-on labs, notebooks, scripts, and real-world datasets.
 
 ---
 
-## 🧠 What I’m Learning
-- Python for Data Analysis
-- Pandas, NumPy, Matplotlib, Seaborn
-- Linux & WSL
-- Git & GitHub (version control)
-- Bash scripting
-- Automation & Cron jobs
-- VS Code workflow
-- Google Colab → GitHub workflow
-- DevOps fundamentals
+## 📌 Internship Details
+
+- **Program**: Microsoft Elevate – GTU Internship
+- **Duration**: January 2026 – April 2026 (12 Weeks)
+- **Mode**: Online + Hands-on Labs
+- **Academic Requirement**: GTU 8th Semester Internship
+- **Powered By**: Edunet Foundation & FICE Education
+- **Mentorship**: Industry experts & Microsoft trainers
+
+---
+
+## 🧠 Learning Roadmap (Week-wise)
+
+### 🔹 Week 1 – Foundations
+- Orientation & Registration
+- Introduction to Artificial Intelligence
+- Introduction to Data Analytics
+
+### 🔹 Week 2 – Data Handling & Visualization
+- Data Cleaning & Preprocessing
+- Exploratory Data Analysis (EDA)
+- Data Visualization (Matplotlib, Seaborn)
+
+### 🔹 Week 3 – Business Intelligence
+- Power BI Fundamentals
+- Data Modeling
+- DAX (Data Analysis Expressions)
+
+### 🔹 Week 4 – Deep Learning Basics
+- Artificial Neural Networks (ANN)
+- Deep Learning Concepts
+
+### 🔹 Week 5 – Advanced BI
+- Advanced DAX
+- Power BI Dashboard Development
+
+### 🔹 Week 6 – Machine Learning
+- Supervised Learning Algorithms
+- Model Training & Evaluation
+
+### 🔹 Week 7 – Advanced ML
+- Unsupervised Learning
+- Reinforcement Learning
+
+### 🔹 Week 8 – Deep Learning (Advanced)
+- ANN (Advanced Use Cases)
+- Model Optimization
+
+### 🔹 Week 9 – Computer Vision
+- Convolutional Neural Networks (CNN)
+- TensorFlow & Keras
+
+### 🔹 Week 10 – Generative AI
+- Generative AI Concepts
+- Microsoft Copilot
+- Prompt Engineering
+
+### 🔹 Week 11 – Cloud Computing
+- Cloud Fundamentals
+- Microsoft Azure Introduction
+
+### 🔹 Week 12 – Azure Experiments
+- Azure Labs
+- Cloud Experiments
+- Deployment Basics
 
 ---
 
 ## 📂 Repository Structure
+
+```text
 MS-Elevate-Internship/
 │
-├── Data/ # Datasets used in analysis
-├── Notebooks/ # Google Colab / Jupyter notebooks (.ipynb)
-├── Scripts/ # Clean Python scripts (.py)
-├── Session-Notes/ # Learning notes & practice
-├── README.md
-└── .gitignore
+├── Data/                # Datasets used for analysis & ML
+├── Notebooks/           # Google Colab / Jupyter notebooks
+├── Scripts/             # Cleaned Python scripts (.py)
+├── Session-Notes/       # Session-wise notes & learnings
+├── README.md            # Project documentation
+└── .gitignore           # Ignored files & folders
+```
 
 ---
 
-## 🔄 Workflow I Follow
-- Exploratory work in **Google Colab**
-- Convert notebooks → `.py` scripts
-- Refactor code for production use
-- Version control with Git
-- Push clean code to GitHub
+## 🛠️ Technologies & Tools Used
+
+### Programming & Analysis
+- Python
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
+
+### Machine Learning & AI
+- Scikit-learn
+- TensorFlow
+- Keras
+- Deep Learning (ANN, CNN)
+- Reinforcement Learning
+- Generative AI
+
+### Business Intelligence
+- Power BI
+- DAX
+- Dashboard Design
+- Data Modeling
+
+### Cloud
+- Microsoft Azure
+- Azure Labs & Experiments
+
+### Dev Tools
+- Google Colab
+- VS Code
+- Git & GitHub
 
 ---
 
-## 🎯 Goal
-To build **industry-ready skills** in Python, Data, and DevOps and maintain a clean, professional GitHub profile showcasing my internship work.
+## 🎯 What This Repository Shows
+
+- My **learning journey** during the internship
+- Hands-on **data analysis & ML workflows**
+- Clean conversion of notebooks → scripts
+- Real-world **dataset handling**
+- Structured project organization
+- Industry-ready coding practices
 
 ---
 
-## 📌 Note
-This repository is continuously updated as I progress through the internship.
+## 🚀 Outcome
+
+By the end of this internship, I gained:
+- Strong foundation in **Data Analytics & AI**
+- Practical exposure to **Machine Learning & Deep Learning**
+- Experience with **Power BI & Business Intelligence**
+- Hands-on knowledge of **Azure Cloud**
+- Confidence in **end-to-end data projects**
 
 ---
 
-⭐ If you are reviewing this for hiring or evaluation, feel free to explore the folders.
+## 📌 Author
+
+**Jay Gupta**  
+GTU 8th Semester Student  
+Microsoft Elevate Intern (2026)
+
+---
+
+> ⭐ This repository represents my consistent effort, learning discipline, and growth throughout the Microsoft Elevate Internship.
