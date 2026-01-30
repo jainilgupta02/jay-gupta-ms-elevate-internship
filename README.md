@@ -1,4 +1,4 @@
-# Microsoft Elevate – GTU Internship (Jan–Apr 2026)
+# 🎓 Microsoft Elevate – GTU Internship (Jan–Apr 2026)
 
 This repository documents my **12-week internship under the Microsoft Elevate Program**, conducted as part of **GTU 8th Semester Internship** and powered by **Edunet Foundation & FICE Education**.
 
