@@ -1,0 +1,23 @@
+# Ignore temporary files
+__pycache__/
+*.pyc
+*.log
+
+# Ignore notebooks checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual environments
+venv/
+env/
+.venv/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore old session folders
+Session 2-23 jan/
+
+# Ignore large datasets if needed
+*.zip
+*.tar.gz
