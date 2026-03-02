@@ -1,0 +1,21 @@
+ID,Title,Type,Genre,Release Year,Duration (min),Rating,Country,Language,Director,Cast,Views (M),User Rating (out of 10),Date Added to Platform
+1,Stranger Things,TV Show,Sci-Fi,2018,50,TV-14,USA,English,The Duffer Brothers,"Millie Bobby Brown, Finn Wolfhard",100,8.9,15-07-2016
+2,Money Heist,TV Show,Thriller,2017,60,TV-MA,Spain,Spanish,Álex Pina,"Álvaro Morte, Úrsula Corberó",65,8.2,20-12-2017
+3,The Witcher,TV Show,Fantasy,2019,60,TV-MA,Poland,English,Lauren Schmidt,"Henry Cavill, Anya Chalotra",85,8,20-12-2019
+4,Bird Box,Movie,Thriller,2018,124,R,USA,English,Susanne Bier,"Sandra Bullock, Trevante Rhodes",70,6.6,21-12-2018
+5,Black Mirror,TV Show,Sci-Fi,2011,60,TV-MA,UK,English,Charlie Brooker,"Daniel Kaluuya, Bryce Dallas Howard",40,8.8,04-12-2011
+6,Extraction,Movie,Action,2020,117,R,USA,English,Sam Hargrave,"Chris Hemsworth, Rudhraksh Jaiswal",90,7,24-04-2020
+7,13 Reasons Why,TV Show,Drama,2017,50,TV-MA,USA,English,Brian Yorkey,"Dylan Minnette, Katherine Langford",60,6.9,31-03-2017
+8,The Crown,TV Show,Drama,2016,58,TV-MA,UK,English,Peter Morgan,"Claire Foy, Olivia Colman",30,8.7,04-11-2016
+9,Enola Holmes,Movie,Adventure,2020,123,PG-13,UK,English,Harry Bradbeer,"Millie Bobby Brown, Henry Cavill",50,6.6,23-09-2020
+10,Lupin,TV Show,Mystery,2021,45,TV-MA,France,French,George Kay,"Omar Sy, Ludivine Sagnier",55,7.5,08-01-2021
+11,Narcos,TV Show,Crime,2015,50,TV-MA,Colombia,English,Chris Brancato,"Wagner Moura, Pedro Pascal",45,8.8,28-08-2015
+12,The Queen's Gambit,TV Show,Drama,2020,60,TV-MA,USA,English,Scott Frank,"Anya Taylor-Joy, Bill Camp",70,8.6,23-10-2020
+13,Army of the Dead,Movie,Action,2021,148,R,USA,English,Zack Snyder,"Dave Bautista, Ella Purnell",75,5.8,21-05-2021
+14,To All the Boys I’ve Loved,Movie,Romance,2018,100,TV-14,USA,English,Susan Johnson,"Lana Condor, Noah Centineo",40,7.1,17-08-2018
+15,BoJack Horseman,TV Show,Animation,2014,25,TV-MA,USA,English,Raphael Bob-Waksberg,"Will Arnett, Amy Sedaris",25,8.7,22-08-2014
+16,The Irishman,Movie,Crime,2019,209,R,USA,English,Martin Scorsese,"Robert De Niro, Al Pacino",35,7.9,27-11-2019
+17,Bridgerton,TV Show,Romance,2020,60,TV-MA,USA,English,Chris Van Dusen,"Phoebe Dynevor, Regé-Jean Page",80,7.4,25-12-2020
+18,The Social Dilemma,Movie,Documentary,2020,94,PG-13,USA,English,Jeff Orlowski,"Tristan Harris, Jeff Seibert",25,7.6,26-01-2020
+19,Shadow and Bone,TV Show,Fantasy,2021,52,TV-14,USA,English,Eric Heisserer,"Jessie Mei Li, Ben Barnes",40,7.7,23-04-2021
+20,The Old Guard,Movie,Action,2020,125,R,USA,English,Gina Prince-Bythewood,"Charlize Theron, Kiki Layne",60,7.2,10-07-2020

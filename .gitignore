@@ -18,6 +18,3 @@ Thumbs.db
 # Ignore large datasets if needed
 *.zip
 *.tar.gz
-
-# Ignore pdfs
-*.pdf
