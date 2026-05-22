@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Border Surveillance AI — Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --bg:#07091a;
+  --bg2:#0c1028;
+  --surface:rgba(255,255,255,0.04);
+  --surface-h:rgba(255,255,255,0.07);
+  --border:rgba(0,217,255,0.12);
+  --border-s:rgba(0,217,255,0.3);
+  --cyan:#00D9FF;
+  --cyan-d:rgba(0,217,255,0.55);
+  --amber:#F59E0B;
+  --red:#EF4444;
+  --orange:#F97316;
+  --green:#10B981;
+  --purple:#8B5CF6;
+  --azure:#4da6ff;
+  --text-p:#DCE6F8;
+  --text-s:#7a8aaa;
+  --text-d:#445060;
+}
+
+body {
+  font-family:'Rajdhani',sans-serif;
+  background:var(--bg);
+  color:var(--text-p);
+  min-height:100vh;
+  padding:48px 28px 60px;
+  position:relative;
+  overflow-x:hidden;
+}
+
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,217,255,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,217,255,0.025) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;z-index:0;
+}
+
+body::after {
+  content:'';
+  position:fixed;top:20%;left:50%;
+  transform:translate(-50%,-50%);
+  width:900px;height:900px;
+  background:radial-gradient(ellipse,rgba(0,120,212,0.05) 0%,transparent 65%);
+  pointer-events:none;z-index:0;
+}
+
+.w{max-width:1340px;margin:0 auto;position:relative;z-index:1;}
+
+/* ── HEADER ──────────────────────────────── */
+.header{text-align:center;margin-bottom:44px;}
+
+.header-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;
+  letter-spacing:0.16em;text-transform:uppercase;color:var(--cyan);
+  background:rgba(0,217,255,0.07);
+  border:1px solid rgba(0,217,255,0.2);
+  padding:5px 16px;border-radius:2px;margin-bottom:22px;
+}
+.header-chip i{
+  width:7px;height:7px;background:var(--cyan);border-radius:50%;
+  animation:dot 2s ease-in-out infinite;
+}
+@keyframes dot{0%,100%{opacity:1}50%{opacity:.3}}
+
+.header h1{
+  font-size:42px;font-weight:700;letter-spacing:0.04em;
+  color:var(--text-p);line-height:1.1;margin-bottom:10px;
+}
+.header h1 em{color:var(--cyan);font-style:normal;}
+
+.header-sub{
+  font-size:15px;color:var(--text-s);font-weight:500;
+  letter-spacing:0.03em;margin-bottom:20px;
+}
+
+.badges{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;}
+.badge{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  padding:4px 11px;border-radius:2px;font-weight:500;letter-spacing:0.04em;
+}
+.bc{background:rgba(0,217,255,0.09);color:var(--cyan);border:1px solid rgba(0,217,255,0.22);}
+.ba{background:rgba(245,158,11,0.09);color:var(--amber);border:1px solid rgba(245,158,11,0.22);}
+.bp{background:rgba(139,92,246,0.09);color:var(--purple);border:1px solid rgba(139,92,246,0.22);}
+.bz{background:rgba(77,166,255,0.09);color:var(--azure);border:1px solid rgba(77,166,255,0.22);}
+.bg{background:rgba(16,185,129,0.09);color:var(--green);border:1px solid rgba(16,185,129,0.22);}
+.br{background:rgba(239,68,68,0.09);color:var(--red);border:1px solid rgba(239,68,68,0.22);}
+
+/* ── DEMO STATS BAR ──────────────────────── */
+.demo-bar{
+  display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:0;
+  background:rgba(0,217,255,0.04);
+  border:1px solid rgba(0,217,255,0.12);
+  border-radius:6px;
+  margin-bottom:40px;overflow:hidden;
+}
+.ds{
+  display:flex;flex-direction:column;align-items:center;
+  padding:16px 32px;gap:2px;flex:1;min-width:120px;
+  border-right:1px solid rgba(255,255,255,0.05);
+  transition:background 0.2s;
+}
+.ds:last-child{border-right:none;}
+.ds:hover{background:rgba(0,217,255,0.06);}
+.ds-v{
+  font-family:'JetBrains Mono',monospace;
+  font-size:22px;font-weight:700;color:var(--cyan);
+  line-height:1;
+}
+.ds-l{
+  font-size:10.5px;color:var(--text-d);
+  text-transform:uppercase;letter-spacing:0.12em;
+  margin-top:4px;
+}
+
+/* ── MAIN LAYOUT ─────────────────────────── */
+.main{display:grid;grid-template-columns:1fr 308px;gap:20px;align-items:start;}
+.pipeline{display:flex;flex-direction:column;}
+.side{display:flex;flex-direction:column;gap:14px;position:sticky;top:24px;}
+
+/* ── CARDS ───────────────────────────────── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:7px;padding:22px 20px;
+  position:relative;transition:border-color .25s,background .25s;
+}
+.card:hover{background:var(--surface-h);border-color:rgba(0,217,255,0.22);}
+
+.card::before{
+  content:'';
+  position:absolute;top:0;left:0;bottom:0;width:3px;
+  border-radius:7px 0 0 7px;
+}
+.cl::before{background:var(--cyan);}
+.ca::before{background:var(--amber);}
+.co::before{background:var(--orange);}
+.cr::before{background:var(--red);}
+.cg::before{background:var(--green);}
+.cp::before{background:var(--purple);}
+.cz::before{background:var(--azure);}
+.cm::before{background:var(--text-s);}
+
+.card-eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  font-weight:500;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--text-d);margin-bottom:6px;
+}
+.card-h{font-size:19px;font-weight:700;letter-spacing:0.02em;color:var(--text-p);margin-bottom:2px;}
+.card-sub{
+  font-family:'JetBrains Mono',monospace;font-size:10.5px;
+  color:var(--text-d);margin-bottom:14px;
+}
+
+.items{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.items li{
+  font-size:13px;color:var(--text-s);
+  padding-left:15px;position:relative;line-height:1.45;
+}
+.items li::before{
+  content:'›';position:absolute;left:0;
+  color:var(--cyan-d);font-weight:700;
+}
+.items li b{color:var(--text-p);font-weight:600;}
+
+/* ── INNER SECTION ───────────────────────── */
+.section{
+  margin-top:13px;padding-top:11px;
+  border-top:1px solid rgba(255,255,255,0.055);
+}
+.section-t{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:var(--text-d);text-transform:uppercase;letter-spacing:0.16em;
+  margin-bottom:8px;
+}
+
+/* ── DETECT CLASSES GRID ─────────────────── */
+.dg{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:5px;margin-top:2px;
+}
+.dc{
+  background:rgba(245,158,11,0.07);
+  border:1px solid rgba(245,158,11,0.18);
+  border-radius:3px;padding:5px 7px;
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  color:var(--amber);text-align:center;
+}
+.dc.wide{grid-column:span 3;text-align:left;padding-left:12px;}
+
+/* ── PRIORITY BADGES ─────────────────────── */
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;}
+.pri{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 11px;border-radius:4px;
+  font-size:11.5px;font-weight:700;letter-spacing:0.08em;
+}
+.pri-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.p1{background:rgba(239,68,68,0.11);color:#ff8585;border:1px solid rgba(239,68,68,0.28);}
+.p1 .pri-dot{background:var(--red);box-shadow:0 0 5px var(--red);}
+.p2{background:rgba(249,115,22,0.11);color:#ffaa70;border:1px solid rgba(249,115,22,0.28);}
+.p2 .pri-dot{background:var(--orange);}
+.p3{background:rgba(245,158,11,0.11);color:#ffd566;border:1px solid rgba(245,158,11,0.28);}
+.p3 .pri-dot{background:var(--amber);}
+.p4{background:rgba(16,185,129,0.11);color:#5de8b8;border:1px solid rgba(16,185,129,0.28);}
+.p4 .pri-dot{background:var(--green);}
+
+/* ── FILE PATHS ──────────────────────────── */
+.fp{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  color:var(--cyan-d);background:rgba(0,217,255,0.06);
+  padding:3px 8px;border-radius:2px;
+  display:inline-block;margin-bottom:4px;
+}
+
+/* ── STAT BARS ───────────────────────────── */
+.sbar{display:flex;align-items:center;gap:8px;margin-top:7px;}
+.sbar-l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-d);width:86px;flex-shrink:0;}
+.sbar-t{flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.sbar-f{height:100%;border-radius:2px;}
+.sbar-v{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-s);width:32px;text-align:right;flex-shrink:0;}
+
+/* ── CONNECTOR BETWEEN STEPS ─────────────── */
+.conn{
+  display:flex;align-items:center;gap:0;
+  padding:6px 0;
+}
+.conn-l{flex:1;height:1px;border-top:1.5px dashed rgba(0,217,255,0.18);}
+.conn-label{
+  font-family:'JetBrains Mono',monospace;font-size:8.5px;
+  color:var(--text-d);letter-spacing:0.12em;
+  padding:0 10px;white-space:nowrap;
+}
+.conn-arrow{
+  width:0;height:0;
+  border-left:4px solid transparent;
+  border-right:4px solid transparent;
+  border-top:6px solid rgba(0,217,255,0.35);
+  margin-top:1px;flex-shrink:0;
+}
+
+/* ── LEGEND ──────────────────────────────── */
+.legend-row{
+  display:flex;align-items:center;gap:9px;
+  font-size:12px;color:var(--text-s);margin-bottom:7px;
+}
+.legend-row:last-child{margin-bottom:0;}
+.leg-line{width:18px;height:3px;border-radius:2px;flex-shrink:0;}
+.leg-dashed{width:18px;height:0;border-top:2px dashed rgba(0,217,255,0.35);flex-shrink:0;}
+
+/* ── PHASE PILLS ─────────────────────────── */
+.phases{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.phase{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(249,115,22,0.08);
+  border:1px solid rgba(249,115,22,0.2);
+  border-radius:3px;padding:5px 10px;
+  font-size:11.5px;color:#ffa070;
+}
+.phase-n{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  background:rgba(249,115,22,0.25);
+  color:#ff9050;padding:1px 5px;border-radius:2px;font-weight:700;
+}
+
+/* ── FLOW MINI PIPELINE ──────────────────── */
+.flow-mini{
+  display:flex;align-items:center;gap:0;
+  flex-wrap:wrap;margin-top:10px;
+}
+.flow-pill{
+  font-family:'JetBrains Mono',monospace;font-size:9.5px;
+  padding:4px 10px;border-radius:2px;color:var(--azure);
+  background:rgba(77,166,255,0.08);border:1px solid rgba(77,166,255,0.2);
+  white-space:nowrap;
+}
+.flow-gt{
+  font-size:11px;color:rgba(77,166,255,0.4);
+  margin:0 4px;font-weight:700;
+}
+
+/* ── FOOTER ──────────────────────────────── */
+.footer{
+  text-align:center;margin-top:52px;padding-top:24px;
+  border-top:1px solid rgba(255,255,255,0.045);
+}
+.footer p{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--text-d);line-height:1.8;
+}
+.footer p span{color:var(--cyan);}
+
+/* ── SVG PIPELINE OVERVIEW ───────────────── */
+.overview{margin-bottom:28px;}
+.overview svg{width:100%;display:block;}
+
+/* ── PHASE STRIP ─────────────────────────── */
+.phase-strip{
+  display:flex;align-items:stretch;
+  background:rgba(0,0,0,0.2);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:6px;overflow:hidden;
+  margin-bottom:28px;
+}
+.ps-item{
+  flex:1;padding:12px 16px;
+  display:flex;flex-direction:column;align-items:center;
+  gap:3px;position:relative;
+  transition:background .2s;
+  border-right:1px solid rgba(255,255,255,0.04);
+}
+.ps-item:last-child{border-right:none;}
+.ps-item:hover{background:rgba(255,255,255,0.04);}
+.ps-n{
+  font-family:'JetBrains Mono',monospace;font-size:8px;
+  color:var(--text-d);text-transform:uppercase;letter-spacing:0.14em;
+}
+.ps-l{font-size:12px;font-weight:700;text-align:center;line-height:1.2;}
+.ps-arrow{
+  position:absolute;right:-9px;top:50%;transform:translateY(-50%);
+  width:0;height:0;
+  border-top:7px solid transparent;border-bottom:7px solid transparent;
+  border-left:8px solid rgba(255,255,255,0.05);z-index:2;
+}
+.ps-arrow2{
+  position:absolute;right:-8px;top:50%;transform:translateY(-50%);
+  width:0;height:0;
+  border-top:6px solid transparent;border-bottom:6px solid transparent;
+  border-left:7px solid var(--bg);z-index:3;
+}
+
+/* ── TWO-PHASE ROW ───────────────────────── */
+.two-phase{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.tp{
+  background:rgba(249,115,22,0.07);
+  border:1px solid rgba(249,115,22,0.18);
+  border-radius:4px;padding:10px 12px;
+}
+.tp-h{
+  font-size:11px;font-weight:700;color:#ffa060;
+  margin-bottom:5px;
+  font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;
+}
+.tp-t{font-size:12px;color:var(--text-s);line-height:1.4;}
+
+/* ── AZURE FLOW MINI ─────────────────────── */
+.az-flow{
+  display:flex;flex-direction:column;gap:6px;margin-top:8px;
+}
+.az-step{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:var(--text-s);
+}
+.az-icon{
+  width:24px;height:24px;border-radius:3px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;
+}
+.az-line{
+  width:1px;height:10px;background:rgba(77,166,255,0.25);
+  margin-left:11px;
+}
+
+</style>
+</head>
+<body>
+<div class="w">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-chip"><i></i>GTU Internship 2026 · Microsoft Elevate Program</div>
+    <h1>AI-Powered <em>Border Surveillance</em> System</h1>
+    <div class="header-sub">End-to-End Pipeline · Real-Time Anomaly Detection · Cloud-Integrated Architecture</div>
+    <div class="badges">
+      <span class="badge bc">Python 3.9+</span>
+      <span class="badge ba">YOLOv8 · Ultralytics</span>
+      <span class="badge ba">PyTorch 2.x</span>
+      <span class="badge bp">OpenCV 4.x</span>
+      <span class="badge bp">Isolation Forest</span>
+      <span class="badge bz">Microsoft Azure</span>
+      <span class="badge bz">Cosmos DB</span>
+      <span class="badge bg">Streamlit</span>
+      <span class="badge br">SendGrid</span>
+      <span class="badge bc">Azure Functions</span>
+    </div>
+  </div>
+
+  <!-- DEMO STATS -->
+  <div class="demo-bar">
+    <div class="ds"><div class="ds-v">18s</div><div class="ds-l">End-to-End Time</div></div>
+    <div class="ds"><div class="ds-v">2 + 1</div><div class="ds-l">Persons + Vehicle</div></div>
+    <div class="ds"><div class="ds-v">78%</div><div class="ds-l">Avg Confidence</div></div>
+    <div class="ds"><div class="ds-v">&lt; 5s</div><div class="ds-l">Dashboard Refresh</div></div>
+    <div class="ds"><div class="ds-v">30</div><div class="ds-l">Baseline Frames</div></div>
+    <div class="ds"><div class="ds-v">Apr 2026</div><div class="ds-l">Live Demo</div></div>
+  </div>
+
+  <!-- PIPELINE OVERVIEW STRIP -->
+  <div class="phase-strip">
+    <div class="ps-item">
+      <div class="ps-n">01</div>
+      <div class="ps-l" style="color:var(--cyan);">Input</div>
+      <div class="ps-n" style="color:var(--text-d);">Video / Camera</div>
+      <div class="ps-arrow"></div><div class="ps-arrow2"></div>
+    </div>
+    <div class="ps-item">
+      <div class="ps-n">02</div>
+      <div class="ps-l" style="color:var(--purple);">Preprocess</div>
+      <div class="ps-n" style="color:var(--text-d);">640×640 · Normalize</div>
+      <div class="ps-arrow"></div><div class="ps-arrow2"></div>
+    </div>
+    <div class="ps-item">
+      <div class="ps-n">03</div>
+      <div class="ps-l" style="color:var(--amber);">Detect</div>
+      <div class="ps-n" style="color:var(--text-d);">YOLOv8 · 7 Classes</div>
+      <div class="ps-arrow"></div><div class="ps-arrow2"></div>
+    </div>
+    <div class="ps-item">
+      <div class="ps-n">04</div>
+      <div class="ps-l" style="color:var(--orange);">Anomaly</div>
+      <div class="ps-n" style="color:var(--text-d);">Isolation Forest</div>
+      <div class="ps-arrow"></div><div class="ps-arrow2"></div>
+    </div>
+    <div class="ps-item">
+      <div class="ps-n">05</div>
+      <div class="ps-l" style="color:var(--red);">Alert</div>
+      <div class="ps-n" style="color:var(--text-d);">4-Level Priority</div>
+      <div class="ps-arrow"></div><div class="ps-arrow2"></div>
+    </div>
+    <div class="ps-item">
+      <div class="ps-n">06</div>
+      <div class="ps-l" style="color:var(--azure);">Cloud</div>
+      <div class="ps-n" style="color:var(--text-d);">Azure · Cosmos DB</div>
+      <div class="ps-arrow"></div><div class="ps-arrow2"></div>
+    </div>
+    <div class="ps-item">
+      <div class="ps-n">07</div>
+      <div class="ps-l" style="color:var(--green);">Dashboard</div>
+      <div class="ps-n" style="color:var(--text-d);">Streamlit · Live</div>
+    </div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main">
+
+    <!-- LEFT: PIPELINE STEPS -->
+    <div class="pipeline">
+
+      <!-- STEP 1 -->
+      <div class="card cl">
+        <div class="card-eyebrow">01 · Input Layer</div>
+        <div class="card-h">Video Input</div>
+        <div class="card-sub">src/pipeline.py · OpenCV VideoCapture</div>
+        <ul class="items">
+          <li><b>MP4 / AVI</b> video file upload (primary)</li>
+          <li><b>Live camera</b> via device index — CCTV integration (future)</li>
+          <li>OpenCV <b>VideoCapture</b> frame reader — initialised once per session</li>
+          <li>Session metadata written at start: source, timestamp, config</li>
+        </ul>
+      </div>
+
+      <div class="conn">
+        <div class="conn-l"></div>
+        <div class="conn-label">video stream</div>
+        <div class="conn-l"></div>
+        <div class="conn-arrow"></div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="card cp">
+        <div class="card-eyebrow">02 · Preprocessing</div>
+        <div class="card-h">Frame Preparation</div>
+        <div class="card-sub">OpenCV pipeline · 1–2 FPS extraction</div>
+        <ul class="items">
+          <li>Resize every frame to <b>640 × 640</b> px for YOLO input</li>
+          <li>Pixel <b>normalization</b> to [0, 1] float range</li>
+          <li>Optional <b>Optical Flow</b> computation → raw <b>motion score</b> per frame</li>
+          <li>Structured <b>frame_item</b> dicts assembled and passed downstream</li>
+        </ul>
+      </div>
+
+      <div class="conn">
+        <div class="conn-l"></div>
+        <div class="conn-label">frame_item dicts</div>
+        <div class="conn-l"></div>
+        <div class="conn-arrow"></div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="card ca">
+        <div class="card-eyebrow">03 · Object Detection</div>
+        <div class="card-h">YOLOv8 Inference</div>
+        <div class="card-sub">src/detector.py · Model loaded once per session</div>
+        <ul class="items">
+          <li>Model loaded <b>once</b>, reused across all frames in the session</li>
+          <li>Per-detection output: <b>class · confidence · bounding box · threat_tag</b></li>
+          <li>Frame-level flags: <b>has_high</b> / <b>has_critical</b> for downstream routing</li>
+          <li>Structured <b>Detection</b> objects emitted per frame</li>
+        </ul>
+        <div class="section">
+          <div class="section-t">Detection Classes (7 Total)</div>
+          <div class="dg">
+            <div class="dc">person</div>
+            <div class="dc">vehicle</div>
+            <div class="dc">crowd</div>
+            <div class="dc">mil_vehicle</div>
+            <div class="dc">aircraft</div>
+            <div class="dc">ship</div>
+            <div class="dc wide">suspicious_object</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="conn">
+        <div class="conn-l"></div>
+        <div class="conn-label">Detection objects + flags</div>
+        <div class="conn-l"></div>
+        <div class="conn-arrow"></div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="card co">
+        <div class="card-eyebrow">04 · Anomaly Detection</div>
+        <div class="card-h">Isolation Forest Scoring</div>
+        <div class="card-sub">src/anomaly.py · Two-phase runtime</div>
+        <div class="two-phase">
+          <div class="tp">
+            <div class="tp-h">Phase 1 — Baseline</div>
+            <div class="tp-t">Frames 1–30: learn <b>normal behaviour</b> profile from low-dim features</div>
+          </div>
+          <div class="tp">
+            <div class="tp-h">Phase 2 — Live Scoring</div>
+            <div class="tp-t">Isolation Forest scoring on all frames after baseline is established</div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-t">Behavioural Features</div>
+          <ul class="items">
+            <li>Detection count · class diversity · confidence stats</li>
+            <li>Motion score · object location · suspicious class presence</li>
+          </ul>
+        </div>
+        <div class="section">
+          <div class="section-t">Output per Frame</div>
+          <ul class="items">
+            <li>Anomaly score <b>0–100</b> · severity: <b>normal → high → critical</b></li>
+            <li>Human-readable <b>reasons</b> list for each scored frame</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="conn">
+        <div class="conn-l"></div>
+        <div class="conn-label">anomaly score · severity · reasons</div>
+        <div class="conn-l"></div>
+        <div class="conn-arrow"></div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="card cr">
+        <div class="card-eyebrow">05 · Alert Management</div>
+        <div class="card-h">Smart Alerting System</div>
+        <div class="card-sub">src/alert_manager.py · Priority-filtered notifications</div>
+        <div class="pg">
+          <div class="pri p1"><div class="pri-dot"></div>CRITICAL</div>
+          <div class="pri p2"><div class="pri-dot"></div>HIGH</div>
+          <div class="pri p3"><div class="pri-dot"></div>MEDIUM</div>
+          <div class="pri p4"><div class="pri-dot"></div>LOW</div>
+        </div>
+        <div class="section">
+          <div class="section-t">Alert Mechanisms</div>
+          <ul class="items">
+            <li>Rolling <b>JSON alert log</b> — append-only writes every run</li>
+            <li><b>Cooldown dedup logic</b> — suppresses duplicate notifications</li>
+            <li><b>SendGrid email</b> — HIGH and CRITICAL events only</li>
+            <li>Azure <b>Cosmos DB</b> persistence when credentials configured</li>
+          </ul>
+        </div>
+        <div class="section">
+          <div class="section-t">Alert Payload Fields</div>
+          <div class="fp">data/alerts/alert_log.json</div>
+          <ul class="items" style="margin-top:6px;">
+            <li>alert_id · frame_id · priority · alert_level</li>
+            <li>anomaly_score · detection_count · motion_score</li>
+            <li>reasons [ ] · notified: true/false</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="conn">
+        <div class="conn-l"></div>
+        <div class="conn-label">session summary + alerts</div>
+        <div class="conn-l"></div>
+        <div class="conn-arrow"></div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="card cg">
+        <div class="card-eyebrow">06 · Visualization Layer</div>
+        <div class="card-h">Streamlit Dashboard</div>
+        <div class="card-sub">dashboard/app.py · Auto-refresh &lt; 5s</div>
+        <ul class="items">
+          <li>Command-centre interface with auto-refreshing alert feed</li>
+          <li>Priority charts · session summaries · anomaly score trends</li>
+          <li>Detection timeline · class distribution charts</li>
+          <li><b>Manual email trigger</b> from UI via SendGrid</li>
+          <li>SendGrid readiness indicator + notification status panel</li>
+          <li>Falls back to <b>demo data</b> when no live pipeline output present</li>
+        </ul>
+        <div class="section">
+          <div class="section-t">Data Sources Read by Dashboard</div>
+          <div class="fp">data/alerts/alert_log.json</div>
+          <div class="fp">data/results/session_*.json</div>
+          <div class="fp">data/detections/anomaly_summary.json</div>
+        </div>
+      </div>
+
+    </div><!-- /pipeline -->
+
+    <!-- RIGHT: SIDE PANEL -->
+    <div class="side">
+
+      <!-- AZURE CLOUD -->
+      <div class="card cz">
+        <div class="card-eyebrow">Azure Cloud Integration</div>
+        <div class="card-h">Cloud Storage</div>
+        <div class="card-sub">src/azure_client.py · Lazy initialisation</div>
+        <ul class="items">
+          <li>Clients created <b>only</b> when valid credentials are present</li>
+          <li>Falls back gracefully — <b>no pipeline interruption</b> if Azure unavailable</li>
+        </ul>
+
+        <div class="section">
+          <div class="section-t">Azure Blob Storage</div>
+          <ul class="items">
+            <li>Session JSON file uploads</li>
+            <li>Annotated frame images</li>
+            <li>Raw video file archive</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-t">Azure Cosmos DB (NoSQL)</div>
+          <ul class="items">
+            <li>Alert document persistence</li>
+            <li>Detection metadata records</li>
+            <li>Anomaly score history</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-t">Trigger Flow</div>
+          <div class="az-flow">
+            <div class="az-step">
+              <div class="az-icon" style="background:rgba(77,166,255,0.1);color:var(--azure);">BT</div>
+              <span>Video Upload → <b>Blob Trigger</b></span>
+            </div>
+            <div class="az-line"></div>
+            <div class="az-step">
+              <div class="az-icon" style="background:rgba(77,166,255,0.1);color:var(--azure);">Fn</div>
+              <span>Azure Functions (Python 3.10)</span>
+            </div>
+            <div class="az-line"></div>
+            <div class="az-step">
+              <div class="az-icon" style="background:rgba(77,166,255,0.1);color:var(--azure);">DB</div>
+              <span>Cosmos DB write + alert log</span>
+            </div>
+            <div class="az-line"></div>
+            <div class="az-step">
+              <div class="az-icon" style="background:rgba(239,68,68,0.1);color:var(--red);">✉</div>
+              <span>SendGrid email dispatch</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-t">Supporting Services</div>
+          <ul class="items">
+            <li><b>Application Insights</b> — monitoring + telemetry</li>
+            <li><b>Key Vault</b> — secret + credential management</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SESSION OUTPUT -->
+      <div class="card cg">
+        <div class="card-eyebrow">Session Artifacts</div>
+        <div class="card-h">Run Output Files</div>
+        <div class="card-sub">data/ · runs/ directories</div>
+        <div class="fp">data/alerts/alert_log.json</div>
+        <div class="fp">data/results/session_*.json</div>
+        <div class="fp">data/detections/frame_*.jpg</div>
+        <div class="fp">data/logs/pipeline.log</div>
+        <div class="fp">runs/detect/</div>
+
+        <div class="section">
+          <div class="section-t">Live Demo Results — April 2026</div>
+          <div class="sbar">
+            <div class="sbar-l">Avg Confidence</div>
+            <div class="sbar-t"><div class="sbar-f" style="width:78%;background:linear-gradient(90deg,var(--amber),var(--orange));"></div></div>
+            <div class="sbar-v">78%</div>
+          </div>
+          <div class="sbar">
+            <div class="sbar-l">Dashboard Speed</div>
+            <div class="sbar-t"><div class="sbar-f" style="width:96%;background:linear-gradient(90deg,var(--green),var(--cyan));"></div></div>
+            <div class="sbar-v">&lt; 5s</div>
+          </div>
+          <div class="sbar">
+            <div class="sbar-l">E2E Pipeline</div>
+            <div class="sbar-t"><div class="sbar-f" style="width:30%;background:linear-gradient(90deg,var(--purple),var(--cyan));"></div></div>
+            <div class="sbar-v">18s</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVERLESS -->
+      <div class="card cp">
+        <div class="card-eyebrow">Serverless Deployment</div>
+        <div class="card-h">Azure Functions</div>
+        <div class="card-sub">Python 3.10 · Blob Trigger → Process → Store</div>
+        <ul class="items">
+          <li><b>Blob Trigger</b> fires on every video upload event</li>
+          <li>Application Insights — logging and monitoring</li>
+          <li>Key Vault — secure secret management</li>
+          <li>Stateless execution — scales automatically</li>
+        </ul>
+      </div>
+
+      <!-- TESTING -->
+      <div class="card cm">
+        <div class="card-eyebrow">Automated Testing</div>
+        <div class="card-h">pytest Test Suite</div>
+        <div class="card-sub">tests/ · --cov=src coverage</div>
+        <ul class="items">
+          <li><b>test_detector.py</b> — YOLOv8 loading, inference, output format</li>
+          <li><b>test_anomaly_and_alert.py</b> — baseline, scoring, priority assignment, log writes</li>
+          <li><b>test_pipeline.py</b> — end-to-end orchestration, file creation, inter-module integration</li>
+        </ul>
+      </div>
+
+      <!-- KEY MODULES -->
+      <div class="card cl">
+        <div class="card-eyebrow">Key Modules</div>
+        <div class="card-h">Source Structure</div>
+        <div class="card-sub">src/ directory</div>
+        <ul class="items">
+          <li><b>pipeline.py</b> — Main orchestration; connects all stages</li>
+          <li><b>detector.py</b> — YOLOv8 wrapper; Detection objects</li>
+          <li><b>anomaly.py</b> — Baseline + Isolation Forest scoring</li>
+          <li><b>alert_manager.py</b> — Priority, log, SendGrid, Cosmos DB</li>
+          <li><b>azure_client.py</b> — Lazy Blob + Cosmos DB clients</li>
+          <li><b>dashboard/app.py</b> — Streamlit command-centre UI</li>
+        </ul>
+      </div>
+
+      <!-- LEGEND -->
+      <div class="card">
+        <div class="card-eyebrow">Legend</div>
+        <div style="margin-top:6px;">
+          <div class="legend-row"><div class="leg-line" style="background:var(--cyan);"></div>Main pipeline flow</div>
+          <div class="legend-row"><div class="leg-dashed"></div>Inter-module data</div>
+          <div class="legend-row"><div class="leg-line" style="background:var(--azure);"></div>Azure cloud path</div>
+          <div class="legend-row"><div class="leg-line" style="background:var(--red);"></div>Alert trigger path</div>
+          <div class="legend-row"><div class="leg-line" style="background:var(--green);"></div>Dashboard / output</div>
+        </div>
+      </div>
+
+    </div><!-- /side -->
+  </div><!-- /main -->
+
+  <!-- FUTURE IMPROVEMENTS -->
+  <div style="margin-top:28px;">
+    <div class="card" style="border-left:3px solid var(--text-d);">
+      <div class="card-eyebrow">Future Improvements</div>
+      <div class="card-h" style="font-size:16px;margin-bottom:12px;">Roadmap</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:7px;">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:4px;padding:9px 12px;font-size:12px;color:var(--text-s);">REST API layer for programmatic pipeline control</div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:4px;padding:9px 12px;font-size:12px;color:var(--text-s);">Real-time streaming via RTSP / WebRTC camera feeds</div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:4px;padding:9px 12px;font-size:12px;color:var(--text-s);">Multi-camera ingestion with centralised alert aggregation</div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:4px;padding:9px 12px;font-size:12px;color:var(--text-s);">Custom YOLOv8 fine-tuning on VEDAI, xView, DOTA datasets</div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:4px;padding:9px 12px;font-size:12px;color:var(--text-s);">Alert frame thumbnails with Azure Blob links in dashboard</div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:4px;padding:9px 12px;font-size:12px;color:var(--text-s);">Automated CI/CD deployment for staging and production</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p><span>Border Surveillance AI</span> · Jainil Gupta (Jay Gupta) · Enrollment 220670132018</p>
+    <p>Microsoft Elevate Internship 2026 · SAL Institute of Technology and Engineering Research · ICT Department · 8th Semester</p>
+    <p style="margin-top:4px;">GTU Problem Domain: Border Defence and Surveillance · AZ-900 Certified 820/1000 · Guided by Prof. Chintan Rana &amp; Adarsh Gupta</p>
+  </div>
+
+</div>
+</body>
+</html>
